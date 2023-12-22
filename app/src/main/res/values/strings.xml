@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AndroidMandala</string>
+    <string name="text_view_multiplier">Multiplier</string>
+    <string name="text_view_base">Base</string>
+</resources>
