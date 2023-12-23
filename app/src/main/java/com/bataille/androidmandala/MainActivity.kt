@@ -55,11 +55,14 @@ class DrawableView : View {
     private var radius = 0.0f
     private var smallRadius = 0.0f
 
-    private var base = 0 // Number of dots on the main circle
-    private var multiplier = 0 // Multiplier that will define the connected dots
+    private var base = Constants.BASE_DEFAULT // Number of dots on the main circle
+    private var multiplier = Constants.MULTIPLIER_DEFAULT // Multiplier that will define the connected dots
 
     private val pointsCoordinates: MutableList<FloatArray> =
         mutableListOf() // List of coordinates of the dots on the main circle
+
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
 
     // When size is changed (or during initialization) update the dimensions of the view
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -77,9 +80,7 @@ class DrawableView : View {
         smallRadius = 0.03f * radius
     }
 
-    fun updateData(viewModel: SharedViewModel) {
-        multiplier = viewModel.multiplier
-        base = viewModel.base
+    private fun genPointsCoordinates() {
         if (base > 0) {
             pointsCoordinates.clear()
             for (i in 0..<base) {
@@ -90,8 +91,21 @@ class DrawableView : View {
         }
     }
 
-    constructor(context: Context) : super(context)
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+    fun updateData(viewModel: SharedViewModel) {
+        multiplier = viewModel.multiplier
+        base = viewModel.base
+        genPointsCoordinates()
+    }
+
+    // Compute data for first drawing of mandala at startup
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
+        centerX = width / 2.0f
+        centerY = height / 2.0f
+        radius = min(width, height).toFloat() * 0.40f
+        smallRadius = 0.03f * radius
+        genPointsCoordinates()
+    }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
