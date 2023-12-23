@@ -4,11 +4,8 @@
 
     <data>
         <variable
-            name="multiplier"
-            type="Integer" />
-        <variable
-            name="base"
-            type="Integer" />
+            name="viewModel"
+            type="com.example.androidmandala.SharedViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -43,7 +40,7 @@
             android:layout_height="0dp"
             android:max="100"
             android:min="1"
-            android:progress="@{multiplier}"
+            android:progress="@{viewModel.multiplier}"
             app:layout_constraintBottom_toTopOf="@+id/textViewBase"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -68,7 +65,7 @@
             android:layout_height="0dp"
             android:max="100"
             android:min="1"
-            android:progress="@{base}"
+            android:progress="@{viewModel.base}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
