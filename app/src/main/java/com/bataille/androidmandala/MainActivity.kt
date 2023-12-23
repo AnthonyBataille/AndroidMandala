@@ -1,4 +1,4 @@
-package com.example.androidmandala
+package com.bataille.androidmandala
 
 import android.content.Context
 import android.graphics.Canvas
@@ -11,7 +11,7 @@ import android.widget.SeekBar
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.androidmandala.databinding.ActivityMainBinding
+import com.bataille.androidmandala.databinding.ActivityMainBinding
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin

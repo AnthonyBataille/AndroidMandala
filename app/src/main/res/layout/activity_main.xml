@@ -5,14 +5,14 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.androidmandala.SharedViewModel" />
+            type="com.bataille.androidmandala.SharedViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.example.androidmandala.DrawableView
+        <com.bataille.androidmandala.DrawableView
             android:id="@+id/drawableViewMain"
             android:layout_width="match_parent"
             android:layout_height="600dp"

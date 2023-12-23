@@ -1,4 +1,4 @@
-package com.example.androidmandala.ui.theme
+package com.bataille.androidmandala.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

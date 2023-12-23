@@ -1,4 +1,4 @@
-package com.example.androidmandala
+package com.bataille.androidmandala
 
 import org.junit.Test
 

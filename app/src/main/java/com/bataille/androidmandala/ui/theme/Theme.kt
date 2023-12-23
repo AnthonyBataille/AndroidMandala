@@ -1,4 +1,4 @@
-package com.example.androidmandala.ui.theme
+package com.bataille.androidmandala.ui.theme
 
 import android.app.Activity
 import android.os.Build

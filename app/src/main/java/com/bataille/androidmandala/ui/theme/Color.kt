@@ -1,4 +1,4 @@
-package com.example.androidmandala.ui.theme
+package com.bataille.androidmandala.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

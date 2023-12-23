@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.androidmandala"
+    namespace = "com.bataille.androidmandala"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.androidmandala"
+        applicationId = "com.bataille.androidmandala"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
