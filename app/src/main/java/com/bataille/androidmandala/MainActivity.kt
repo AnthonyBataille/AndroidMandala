@@ -11,6 +11,9 @@ import android.widget.SeekBar
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.bataille.androidmandala.databinding.ActivityMainBinding
 import kotlin.math.PI
 import kotlin.math.cos
@@ -24,8 +27,21 @@ object Constants {
 }
 
 class SharedViewModel : ViewModel() {
-    var multiplier = 0
-    var base = 0
+    private val _multiplier = MutableLiveData<Int>(Constants.MULTIPLIER_DEFAULT)
+    private val _base = MutableLiveData<Int>(Constants.BASE_DEFAULT)
+
+    val multiplier: LiveData<Int>
+        get() = _multiplier
+    val base: LiveData<Int>
+        get() = _base
+
+    fun updateMultiplier(newValue: Int) {
+        _multiplier.value = newValue
+    }
+
+    fun updateBase(newValue: Int) {
+        _base.value = newValue
+    }
 }
 
 class DrawableView : View {
@@ -55,8 +71,9 @@ class DrawableView : View {
     private var radius = 0.0f
     private var smallRadius = 0.0f
 
-    private var base = Constants.BASE_DEFAULT // Number of dots on the main circle
-    private var multiplier = Constants.MULTIPLIER_DEFAULT // Multiplier that will define the connected dots
+    private var base: Int? = Constants.BASE_DEFAULT // Number of dots on the main circle
+    private var multiplier: Int? =
+        Constants.MULTIPLIER_DEFAULT // Multiplier that will define the connected dots
 
     private val pointsCoordinates: MutableList<FloatArray> =
         mutableListOf() // List of coordinates of the dots on the main circle
@@ -81,19 +98,20 @@ class DrawableView : View {
     }
 
     private fun genPointsCoordinates() {
-        if (base > 0) {
+        val baseSafe = base ?: 0
+        if (baseSafe > 0) {
             pointsCoordinates.clear()
-            for (i in 0..<base) {
-                val pointX = centerX + cos(PI - 2.0 * PI * i / base).toFloat() * radius
-                val pointY = centerY + sin(PI - 2.0 * PI * i / base).toFloat() * radius
+            for (i in 0..<baseSafe) {
+                val pointX = centerX + cos(PI - 2.0 * PI * i / baseSafe).toFloat() * radius
+                val pointY = centerY + sin(PI - 2.0 * PI * i / baseSafe).toFloat() * radius
                 pointsCoordinates.add(floatArrayOf(pointX, pointY))
             }
         }
     }
 
     fun updateData(viewModel: SharedViewModel) {
-        multiplier = viewModel.multiplier
-        base = viewModel.base
+        multiplier = viewModel.multiplier.value
+        base = viewModel.base.value
         genPointsCoordinates()
     }
 
@@ -115,7 +133,10 @@ class DrawableView : View {
         // Draw main circle
         canvas.drawCircle(centerX, centerY, radius, mainCirclePaint)
 
-        if (base > 0) {
+        val baseSafe = base ?: 0
+        val multiplierSafe = multiplier ?: 0
+
+        if (baseSafe > 0) {
             // Draw dots on the main circle
             for (point in pointsCoordinates) {
                 val pointX = point[0]
@@ -123,13 +144,13 @@ class DrawableView : View {
                 canvas.drawCircle(pointX, pointY, smallRadius, smallCirclePaint)
             }
         }
-        if (multiplier > 0 && base > 0) {
+        if (multiplierSafe > 0 && baseSafe > 0) {
             // Connects the dots based on the modulo rule and the multiplier
-            for (i in 0..<base) {
+            for (i in 0..<baseSafe) {
                 val startPointX = pointsCoordinates[i][0]
                 val startPointY = pointsCoordinates[i][1]
-                val endPointX = pointsCoordinates[i * multiplier % base][0]
-                val endPointY = pointsCoordinates[i * multiplier % base][1]
+                val endPointX = pointsCoordinates[i * multiplierSafe % baseSafe][0]
+                val endPointY = pointsCoordinates[i * multiplierSafe % baseSafe][1]
                 canvas.drawLine(startPointX, startPointY, endPointX, endPointY, linePaint)
             }
         }
@@ -144,17 +165,22 @@ class MainActivity : ComponentActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         // The viewModel contains the base and the multiplier which are shared to other classes
         viewModel = ViewModelProvider(this).get(SharedViewModel::class.java)
-        viewModel.base = Constants.BASE_DEFAULT
-        viewModel.multiplier = Constants.MULTIPLIER_DEFAULT
+        viewModel.base.observe(this, Observer { newValue ->
+            binding.textViewBaseValue.text = "$newValue"
+        })
+        viewModel.multiplier.observe(this, Observer { newValue ->
+            binding.textViewMultiplierValue.text = "$newValue"
+        })
         binding.viewModel = viewModel
 
         binding.seekBarBase.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             // When the progress bar is changed, update the value of base and update the drawable view
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                viewModel.base = progress
+                viewModel.updateBase(progress)
                 binding.drawableViewMain.updateData(viewModel)
                 binding.drawableViewMain.invalidate()
             }
+
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {}
         })
@@ -163,10 +189,11 @@ class MainActivity : ComponentActivity() {
             SeekBar.OnSeekBarChangeListener {
             // When the multiplier bar is changed, update the value of multiplier and update the drawable view
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                viewModel.multiplier = progress
+                viewModel.updateMultiplier(progress)
                 binding.drawableViewMain.updateData(viewModel)
                 binding.drawableViewMain.invalidate()
             }
+
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {}
         })

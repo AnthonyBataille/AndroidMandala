@@ -33,12 +33,23 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/drawableViewMain" />
 
+        <TextView
+            android:id="@+id/textViewMultiplierValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text="@{viewModel.multiplier.toString()}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            app:layout_constraintBottom_toTopOf="@id/seekBarMultiplier"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/drawableViewMain" />
+
         <SeekBar
             android:id="@+id/seekBarMultiplier"
             style="@style/Widget.AppCompat.SeekBar.Discrete"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:max="100"
+            android:max="50"
             android:min="1"
             android:progress="@{viewModel.multiplier}"
             app:layout_constraintBottom_toTopOf="@+id/textViewBase"
@@ -58,12 +69,23 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/seekBarMultiplier" />
 
+        <TextView
+            android:id="@+id/textViewBaseValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text="@{viewModel.base.toString()}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            app:layout_constraintBottom_toTopOf="@+id/seekBarBase"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/seekBarMultiplier" />
+
         <SeekBar
             android:id="@+id/seekBarBase"
             style="@style/Widget.AppCompat.SeekBar.Discrete"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:max="100"
+            android:max="50"
             android:min="1"
             android:progress="@{viewModel.base}"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -71,8 +93,6 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewBase" />
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
 
