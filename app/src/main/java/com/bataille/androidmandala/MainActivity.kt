@@ -24,6 +24,16 @@ import kotlin.math.min
 object Constants {
     const val BASE_DEFAULT = 10
     const val MULTIPLIER_DEFAULT = 2
+    const val NUM_POINTS_MIN_VALUE = 20
+    const val NUM_POINTS_MAX_VALUE = 60
+}
+
+fun hash(value: Int, minValue: Int, maxValue: Int): Int {
+    var res = value
+        .and(0xFF)
+        .xor(0xAA)
+    res = res % (maxValue - minValue) + minValue
+    return res
 }
 
 class SharedViewModel : ViewModel() {
@@ -74,6 +84,7 @@ class DrawableView : View {
     private var base: Int? = Constants.BASE_DEFAULT // Number of dots on the main circle
     private var multiplier: Int? =
         Constants.MULTIPLIER_DEFAULT // Multiplier that will define the connected dots
+    private var numPoints: Int = (Constants.NUM_POINTS_MIN_VALUE + Constants.NUM_POINTS_MAX_VALUE) / 2
 
     private val pointsCoordinates: MutableList<FloatArray> =
         mutableListOf() // List of coordinates of the dots on the main circle
@@ -98,12 +109,11 @@ class DrawableView : View {
     }
 
     private fun genPointsCoordinates() {
-        val baseSafe = base ?: 0
-        if (baseSafe > 0) {
+        if (numPoints > 0) {
             pointsCoordinates.clear()
-            for (i in 0..<baseSafe) {
-                val pointX = centerX + cos(PI - 2.0 * PI * i / baseSafe).toFloat() * radius
-                val pointY = centerY + sin(PI - 2.0 * PI * i / baseSafe).toFloat() * radius
+            for (i in 0..<numPoints) {
+                val pointX = centerX + cos(PI - 2.0 * PI * i / numPoints).toFloat() * radius
+                val pointY = centerY + sin(PI - 2.0 * PI * i / numPoints).toFloat() * radius
                 pointsCoordinates.add(floatArrayOf(pointX, pointY))
             }
         }
@@ -112,6 +122,7 @@ class DrawableView : View {
     fun updateData(viewModel: SharedViewModel) {
         multiplier = viewModel.multiplier.value
         base = viewModel.base.value
+        numPoints = hash(base ?: 0, Constants.NUM_POINTS_MIN_VALUE, Constants.NUM_POINTS_MAX_VALUE)
         genPointsCoordinates()
     }
 
@@ -133,26 +144,23 @@ class DrawableView : View {
         // Draw main circle
         canvas.drawCircle(centerX, centerY, radius, mainCirclePaint)
 
-        val baseSafe = base ?: 0
         val multiplierSafe = multiplier ?: 0
 
-        if (baseSafe > 0) {
-            // Draw dots on the main circle
-            for (point in pointsCoordinates) {
-                val pointX = point[0]
-                val pointY = point[1]
-                canvas.drawCircle(pointX, pointY, smallRadius, smallCirclePaint)
-            }
+        // Draw dots on the main circle
+        for (point in pointsCoordinates) {
+            val pointX = point[0]
+            val pointY = point[1]
+            canvas.drawCircle(pointX, pointY, smallRadius, smallCirclePaint)
         }
-        if (multiplierSafe > 0 && baseSafe > 0) {
-            // Connects the dots based on the modulo rule and the multiplier
-            for (i in 0..<baseSafe) {
-                val startPointX = pointsCoordinates[i][0]
-                val startPointY = pointsCoordinates[i][1]
-                val endPointX = pointsCoordinates[i * multiplierSafe % baseSafe][0]
-                val endPointY = pointsCoordinates[i * multiplierSafe % baseSafe][1]
-                canvas.drawLine(startPointX, startPointY, endPointX, endPointY, linePaint)
-            }
+
+        val targetPointMultiplier = hash(multiplierSafe, 2, numPoints)
+        // Connects the dots based on the modulo rule and the multiplier
+        for (i in 0..<numPoints) {
+            val startPointX = pointsCoordinates[i][0]
+            val startPointY = pointsCoordinates[i][1]
+            val endPointX = pointsCoordinates[(i * targetPointMultiplier) % numPoints][0]
+            val endPointY = pointsCoordinates[(i * targetPointMultiplier) % numPoints][1]
+            canvas.drawLine(startPointX, startPointY, endPointX, endPointY, linePaint)
         }
     }
 }
