@@ -22,8 +22,9 @@ import kotlin.math.min
 
 
 object Constants {
-    const val BASE_DEFAULT = 10
-    const val MULTIPLIER_DEFAULT = 2
+    const val MONTH_DEFAULT = 10
+    const val DAY_DEFAULT = 2
+    const val AGE_DEFAULT = 20
     const val NUM_POINTS_MIN_VALUE = 20
     const val NUM_POINTS_MAX_VALUE = 60
 }
@@ -37,20 +38,28 @@ fun hash(value: Int, minValue: Int, maxValue: Int): Int {
 }
 
 class SharedViewModel : ViewModel() {
-    private val _multiplier = MutableLiveData<Int>(Constants.MULTIPLIER_DEFAULT)
-    private val _base = MutableLiveData<Int>(Constants.BASE_DEFAULT)
+    private val _day = MutableLiveData<Int>(Constants.DAY_DEFAULT)
+    private val _month = MutableLiveData<Int>(Constants.MONTH_DEFAULT)
+    private val _age = MutableLiveData<Int>(Constants.AGE_DEFAULT)
 
-    val multiplier: LiveData<Int>
-        get() = _multiplier
-    val base: LiveData<Int>
-        get() = _base
+    val day: LiveData<Int>
+        get() = _day
+    val month: LiveData<Int>
+        get() = _month
 
-    fun updateMultiplier(newValue: Int) {
-        _multiplier.value = newValue
+    val age: LiveData<Int>
+        get() = _age
+
+    fun updateDay(newValue: Int) {
+        _day.value = newValue
     }
 
-    fun updateBase(newValue: Int) {
-        _base.value = newValue
+    fun updateMonth(newValue: Int) {
+        _month.value = newValue
+    }
+
+    fun updateAge(newValue: Int) {
+        _age.value = newValue
     }
 }
 
@@ -81,10 +90,12 @@ class DrawableView : View {
     private var radius = 0.0f
     private var smallRadius = 0.0f
 
-    private var base: Int? = Constants.BASE_DEFAULT // Number of dots on the main circle
-    private var multiplier: Int? =
-        Constants.MULTIPLIER_DEFAULT // Multiplier that will define the connected dots
-    private var numPoints: Int = (Constants.NUM_POINTS_MIN_VALUE + Constants.NUM_POINTS_MAX_VALUE) / 2
+    private var month: Int? = Constants.MONTH_DEFAULT // Number of dots on the main circle
+    private var day: Int? =
+        Constants.DAY_DEFAULT // Multiplier that will define the connected dots
+    private var age: Int? = Constants.AGE_DEFAULT
+    private var numPoints: Int =
+        age ?: ((Constants.NUM_POINTS_MIN_VALUE + Constants.NUM_POINTS_MAX_VALUE) / 2)
 
     private val pointsCoordinates: MutableList<FloatArray> =
         mutableListOf() // List of coordinates of the dots on the main circle
@@ -120,9 +131,10 @@ class DrawableView : View {
     }
 
     fun updateData(viewModel: SharedViewModel) {
-        multiplier = viewModel.multiplier.value
-        base = viewModel.base.value
-        numPoints = hash(base ?: 0, Constants.NUM_POINTS_MIN_VALUE, Constants.NUM_POINTS_MAX_VALUE)
+        day = viewModel.day.value
+        month = viewModel.month.value
+        age = viewModel.age.value
+        numPoints = age ?: ((Constants.NUM_POINTS_MIN_VALUE + Constants.NUM_POINTS_MAX_VALUE) / 2)
         genPointsCoordinates()
     }
 
@@ -144,7 +156,8 @@ class DrawableView : View {
         // Draw main circle
         canvas.drawCircle(centerX, centerY, radius, mainCirclePaint)
 
-        val multiplierSafe = multiplier ?: 0
+        val daySafe = day ?: 0
+        val monthSafe = month ?: 0
 
         // Draw dots on the main circle
         for (point in pointsCoordinates) {
@@ -153,13 +166,13 @@ class DrawableView : View {
             canvas.drawCircle(pointX, pointY, smallRadius, smallCirclePaint)
         }
 
-        val targetPointMultiplier = hash(multiplierSafe, 2, numPoints)
+        val targetPoint = daySafe * monthSafe
         // Connects the dots based on the modulo rule and the multiplier
         for (i in 0..<numPoints) {
             val startPointX = pointsCoordinates[i][0]
             val startPointY = pointsCoordinates[i][1]
-            val endPointX = pointsCoordinates[(i * targetPointMultiplier) % numPoints][0]
-            val endPointY = pointsCoordinates[(i * targetPointMultiplier) % numPoints][1]
+            val endPointX = pointsCoordinates[(i * targetPoint) % numPoints][0]
+            val endPointY = pointsCoordinates[(i * targetPoint) % numPoints][1]
             canvas.drawLine(startPointX, startPointY, endPointX, endPointY, linePaint)
         }
     }
@@ -173,18 +186,21 @@ class MainActivity : ComponentActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         // The viewModel contains the base and the multiplier which are shared to other classes
         viewModel = ViewModelProvider(this).get(SharedViewModel::class.java)
-        viewModel.base.observe(this, Observer { newValue ->
-            binding.textViewBaseValue.text = "$newValue"
+        viewModel.month.observe(this, Observer { newValue ->
+            binding.textViewMonthValue.text = "$newValue"
         })
-        viewModel.multiplier.observe(this, Observer { newValue ->
-            binding.textViewMultiplierValue.text = "$newValue"
+        viewModel.day.observe(this, Observer { newValue ->
+            binding.textViewDayValue.text = "$newValue"
+        })
+        viewModel.age.observe(this, Observer { newValue ->
+            binding.textViewAgeValue.text = "$newValue"
         })
         binding.viewModel = viewModel
 
-        binding.seekBarBase.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        binding.seekBarMonth.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             // When the progress bar is changed, update the value of base and update the drawable view
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                viewModel.updateBase(progress)
+                viewModel.updateMonth(progress)
                 binding.drawableViewMain.updateData(viewModel)
                 binding.drawableViewMain.invalidate()
             }
@@ -193,11 +209,24 @@ class MainActivity : ComponentActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar) {}
         })
 
-        binding.seekBarMultiplier.setOnSeekBarChangeListener(object :
+        binding.seekBarDay.setOnSeekBarChangeListener(object :
             SeekBar.OnSeekBarChangeListener {
             // When the multiplier bar is changed, update the value of multiplier and update the drawable view
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                viewModel.updateMultiplier(progress)
+                viewModel.updateDay(progress)
+                binding.drawableViewMain.updateData(viewModel)
+                binding.drawableViewMain.invalidate()
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {}
+        })
+
+        binding.seekBarAge.setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
+            // When the multiplier bar is changed, update the value of multiplier and update the drawable view
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                viewModel.updateAge(progress)
                 binding.drawableViewMain.updateData(viewModel)
                 binding.drawableViewMain.invalidate()
             }

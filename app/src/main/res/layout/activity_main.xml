@@ -15,86 +15,122 @@
         <com.bataille.androidmandala.DrawableView
             android:id="@+id/drawableViewMain"
             android:layout_width="match_parent"
-            android:layout_height="600dp"
-            app:layout_constraintBottom_toTopOf="@+id/textViewMultiplier"
+            android:layout_height="400dp"
+            app:layout_constraintBottom_toTopOf="@+id/textViewDay"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textViewMultiplier"
+            android:id="@+id/textViewDay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:text="@string/text_view_multiplier"
+            android:text="@string/text_view_day"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            app:layout_constraintBottom_toTopOf="@+id/seekBarMultiplier"
+            app:layout_constraintBottom_toTopOf="@+id/seekBarDay"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/drawableViewMain" />
 
         <TextView
-            android:id="@+id/textViewMultiplierValue"
+            android:id="@+id/textViewDayValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:layout_marginTop="8dp"
-            android:text="@{viewModel.multiplier.toString()}"
+            android:text="@{viewModel.day.toString()}"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            app:layout_constraintBottom_toTopOf="@id/seekBarMultiplier"
+            app:layout_constraintBottom_toTopOf="@id/seekBarDay"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/drawableViewMain" />
 
         <SeekBar
-            android:id="@+id/seekBarMultiplier"
+            android:id="@+id/seekBarDay"
             style="@style/Widget.AppCompat.SeekBar.Discrete"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:max="50"
+            android:max="31"
             android:min="1"
-            android:progress="@{viewModel.multiplier}"
-            app:layout_constraintBottom_toTopOf="@+id/textViewBase"
+            android:progress="@{viewModel.day}"
+            app:layout_constraintBottom_toTopOf="@+id/textViewMonth"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewMultiplier" />
+            app:layout_constraintTop_toBottomOf="@+id/textViewDay" />
 
         <TextView
-            android:id="@+id/textViewBase"
+            android:id="@+id/textViewMonth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="@string/text_view_base"
+            android:text="@string/text_view_month"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            app:layout_constraintBottom_toTopOf="@+id/seekBarBase"
+            app:layout_constraintBottom_toTopOf="@+id/seekBarMonth"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/seekBarMultiplier" />
+            app:layout_constraintTop_toBottomOf="@+id/seekBarDay" />
 
         <TextView
-            android:id="@+id/textViewBaseValue"
+            android:id="@+id/textViewMonthValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
-            android:text="@{viewModel.base.toString()}"
+            android:text="@{viewModel.month.toString()}"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            app:layout_constraintBottom_toTopOf="@+id/seekBarBase"
+            app:layout_constraintBottom_toTopOf="@+id/seekBarMonth"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/seekBarMultiplier" />
+            app:layout_constraintTop_toBottomOf="@+id/seekBarDay" />
 
         <SeekBar
-            android:id="@+id/seekBarBase"
+            android:id="@+id/seekBarMonth"
             style="@style/Widget.AppCompat.SeekBar.Discrete"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:max="50"
+            android:max="12"
             android:min="1"
-            android:progress="@{viewModel.base}"
+            android:progress="@{viewModel.month}"
+            app:layout_constraintBottom_toBottomOf="@+id/textViewAge"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewMonth" />
+
+        <TextView
+            android:id="@+id/textViewAge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/text_view_age"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            app:layout_constraintBottom_toTopOf="@+id/seekBarAge"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/seekBarMonth" />
+
+        <TextView
+            android:id="@+id/textViewAgeValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text="@{viewModel.age.toString()}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            app:layout_constraintBottom_toTopOf="@+id/seekBarAge"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/seekBarMonth" />
+
+        <SeekBar
+            android:id="@+id/seekBarAge"
+            style="@style/Widget.AppCompat.SeekBar.Discrete"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:max="100"
+            android:min="1"
+            android:progress="@{viewModel.age}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewBase" />
+            app:layout_constraintTop_toBottomOf="@+id/textViewAge" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
 
